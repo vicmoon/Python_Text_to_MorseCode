@@ -17,7 +17,7 @@ MORSE_CODE_DICT = {
 
 #Create input
 
-word = input("Enter the text: ")
+word = input("Enter the text to encode : ")
 # print(word)
 
 #Separate the String into Characters  
@@ -39,3 +39,31 @@ def text_to_morse(word):
 
 result = text_to_morse(word)
 print(result)
+
+
+
+reversed_morse_code_DICT= {}
+for key, value in MORSE_CODE_DICT.items():
+    reversed_morse_code_DICT[value] = key
+
+#dict comprehention
+#reversed_morse = {value: key for key, value in MORSE_CODE_DICT.items()}
+
+def morse_to_text(morse_code):
+    words = morse_code.split("/")
+    decoded_words = []
+
+
+    for word in words:
+        letters= word.split(" ")
+        decoded_word = "".join(reversed_morse_code_DICT[letter] for letter in letters if letter in reversed_morse_code_DICT )
+        decoded_words.append(decoded_word)
+
+    return " ".join(decoded_words)
+
+
+morse_input = input("Enter Morse code to decode:\n")
+decoded_text = morse_to_text(morse_input)
+print(decoded_text)
+
+
