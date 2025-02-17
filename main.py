@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, jsonify
+import art
 
 app = Flask(__name__)
+
+art_logo = art.art
 
 # Morse Code Dictionary
 MORSE_CODE_DICT = {
@@ -52,7 +55,7 @@ def decode():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", art_logo=art_logo)
 
 if __name__ == "__main__":
     app.run(debug=True)
