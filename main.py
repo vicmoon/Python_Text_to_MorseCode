@@ -1,9 +1,8 @@
-# Transform input text to morse code  
+from flask import Flask, render_template, request, jsonify
 
-#Assign Each Letter the Morse Code Representation
-# Format the Output 
+app = Flask(__name__)
 
-
+# Morse Code Dictionary
 MORSE_CODE_DICT = {
     'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.',
     'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---',
@@ -15,55 +14,45 @@ MORSE_CODE_DICT = {
     '9': '----.'
 }
 
-#Create input
+# Reverse Morse Code Dictionary for Decoding
+REVERSED_MORSE_CODE_DICT = {value: key for key, value in MORSE_CODE_DICT.items()}
 
-word = input("Enter the text to encode : ")
-# print(word)
+# Convert Text to Morse
+def text_to_morse(text):
+    text = text.upper()
+    morse_list = [MORSE_CODE_DICT.get(char, '/') for char in text]
+    return " ".join(morse_list)
 
-#Separate the String into Characters  
-    # Loop through each character and replace it with its Morse equivalent. 
-morse_list = []
-
-def text_to_morse(word):
-    word = word.upper()  # Convert to uppercase
-    morse_list = []  # Store Morse code symbols
-
-    for char in word:
-        if char in MORSE_CODE_DICT:
-            morse_list.append(MORSE_CODE_DICT[char])  # Convert to Morse
-        elif char == " ":
-            morse_list.append("/")  # Word separator
-
-    return " ".join(morse_list)  # Join Morse symbols with spaces
-
-
-result = text_to_morse(word)
-print(result)
-
-
-
-reversed_morse_code_DICT= {}
-for key, value in MORSE_CODE_DICT.items():
-    reversed_morse_code_DICT[value] = key
-
-#dict comprehention
-#reversed_morse = {value: key for key, value in MORSE_CODE_DICT.items()}
-
+# Convert Morse to Text
 def morse_to_text(morse_code):
-    words = morse_code.split("/")
+    words = morse_code.split(" / ")  # Split words by '/'
     decoded_words = []
 
-
     for word in words:
-        letters= word.split(" ")
-        decoded_word = "".join(reversed_morse_code_DICT[letter] for letter in letters if letter in reversed_morse_code_DICT )
+        letters = word.split(" ")
+        decoded_word = "".join(REVERSED_MORSE_CODE_DICT.get(letter, '') for letter in letters)
         decoded_words.append(decoded_word)
 
     return " ".join(decoded_words)
 
+# AJAX Routes for Encoding & Decoding
+@app.route("/encode", methods=["POST"])
+def encode():
+    data = request.get_json()
+    text = data.get("text", "")
+    morse_result = text_to_morse(text)
+    return jsonify({"morse": morse_result})
 
-morse_input = input("Enter Morse code to decode:\n")
-decoded_text = morse_to_text(morse_input)
-print(decoded_text)
+@app.route("/decode", methods=["POST"])
+def decode():
+    data = request.get_json()
+    morse = data.get("morse", "")
+    text_result = morse_to_text(morse)
+    return jsonify({"text": text_result})
 
+@app.route("/")
+def index():
+    return render_template("index.html")
 
+if __name__ == "__main__":
+    app.run(debug=True)

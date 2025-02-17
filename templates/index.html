@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Morse Code Converter</title>
+    <script>
+      async function encodeText() {
+        const text = document.getElementById('textInput').value;
+        const response = await fetch('/encode', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text }),
+        });
+        const data = await response.json();
+        document.getElementById('morseOutput').innerText =
+          'Morse Code: ' + data.morse;
+      }
+
+      async function decodeMorse() {
+        const morse = document.getElementById('morseInput').value;
+        const response = await fetch('/decode', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ morse: morse }),
+        });
+        const data = await response.json();
+        document.getElementById('textOutput').innerText = 'Text: ' + data.text;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Morse Code Converter</h1>
+
+    <h2>Encode Text to Morse</h2>
+    <input type="text" id="textInput" placeholder="Enter text" />
+    <button onclick="encodeText()">Convert to Morse</button>
+    <p id="morseOutput"></p>
+
+    <hr />
+
+    <h2>Decode Morse to Text</h2>
+    <input type="text" id="morseInput" placeholder="Enter Morse code" />
+    <button onclick="decodeMorse()">Convert to Text</button>
+    <p id="textOutput"></p>
+  </body>
+</html>
